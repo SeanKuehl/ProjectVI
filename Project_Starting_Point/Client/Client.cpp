@@ -80,6 +80,7 @@ int main()
 //reading from the file to determine size before reading
 //from file? That could cause a drag.
 
+// Open the txt input data file and read line by line, incrementing the uiSize variable containing the number of lines of data per each iteration
 unsigned int GetSize()
 {
 	string strInput;
