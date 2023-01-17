@@ -24,36 +24,45 @@ int main()
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
-	uiSize = GetSize();
+	uiSize = GetSize(); //this is the number of lines in the datafile
+	//in a loop, open the file, read one line, close it, repeat
 	for (unsigned int l = 0; l < uiSize; l++)
 	{
+		//load in the text file and read it
 		string strInput;
 		ifstream ifs("DataFile.txt");
 		for (unsigned int iStart = 0; iStart < l; iStart++)
 			getline(ifs, strInput);
 
 		getline(ifs, strInput);
-		if (l > 0)
+		if (l > 0) //if line is greater than 0, handle the values
 		{
 			size_t offset, preOffset;
 			offset = preOffset = 0;
 			unsigned int iParamIndex = 0;
 			//while (offset != std::string::npos)
+			//read everything after the date and parse the rest of the stuff
 			while(iParamIndex != 8)
 			{
 				offset = strInput.find_first_of(',', preOffset+1);
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
+				//send paramname (eg. "ACCELERATION BODY X")
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
+				//receives ACK from server
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
+				//sends the param data (eg. -0.022142)
 				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
+				//receives fValue from server
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
+				//print the fValue received from server
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
 				preOffset = offset;
 				iParamIndex++;
 			}
 		}
-		else
+		else //if line is the first line, handle the param names
 		{
+			//put the timestamp in vector
 			ParamNames.push_back("TIME STAMP");
 			size_t offset, preOffset;
 			offset = 0;
@@ -62,7 +71,7 @@ int main()
 			{
 				offset = strInput.find_first_of(',', preOffset + 1);
 				string newParam = strInput.substr(preOffset + 1, offset - (preOffset + 1));
-				ParamNames.push_back(newParam);
+				ParamNames.push_back(newParam); //add the param names to ParamNames vector
 				preOffset = offset;
 			}
 		}
