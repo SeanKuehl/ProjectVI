@@ -41,6 +41,7 @@ int main()
 			//while (offset != std::string::npos)
 			while(iParamIndex != 8)
 			{
+				//Use proper TCP format for sending and receiving
 				offset = strInput.find_first_of(',', preOffset+1);
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
