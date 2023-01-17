@@ -46,8 +46,8 @@ int main()
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
-				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
-				recv(ClientSocket, Rx, sizeof(Rx), 0);
+				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);	//this is server's rxBuffer on other side
+				recv(ClientSocket, Rx, sizeof(Rx), 0);	//this is tx on other side
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
 				preOffset = offset;
 				iParamIndex++;
