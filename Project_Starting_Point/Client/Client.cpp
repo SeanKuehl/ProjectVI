@@ -44,17 +44,15 @@ int main()
 			//read everything after the date and parse the rest of the stuff
 			while(iParamIndex != 8)
 			{
+				//Use proper TCP format for sending and receiving
 				offset = strInput.find_first_of(',', preOffset+1);
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
 				//send paramname (eg. "ACCELERATION BODY X")
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
 				//receives ACK from server
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
-				//sends the param data (eg. -0.022142)
 				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
-				//receives fValue from server
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
-				//print the fValue received from server
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
 				preOffset = offset;
 				iParamIndex++;
@@ -83,6 +81,9 @@ int main()
 
 	return 1;
 }
+
+//reading from the file to determine size before reading
+//from file? That could cause a drag.
 
 unsigned int GetSize()
 {
