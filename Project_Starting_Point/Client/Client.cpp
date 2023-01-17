@@ -54,6 +54,7 @@ int main()
 		}
 		else
 		{
+			//load up params the first time
 			ParamNames.push_back("TIME STAMP");
 			size_t offset, preOffset;
 			offset = 0;
@@ -74,6 +75,9 @@ int main()
 
 	return 1;
 }
+
+//reading from the file to determine size before reading
+//from file? That could cause a drag.
 
 unsigned int GetSize()
 {
