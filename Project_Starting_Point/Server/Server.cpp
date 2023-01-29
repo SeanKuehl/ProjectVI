@@ -84,7 +84,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(0, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(0);
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
@@ -95,7 +98,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(1, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(1);
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
@@ -106,7 +112,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(2, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(2);
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
@@ -117,7 +126,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(3, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(3);
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
@@ -128,7 +140,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(4, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(4);
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
@@ -139,7 +154,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(5, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(5);
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
@@ -150,7 +168,10 @@ int main()
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
 			UpdateData(6, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 			fValue = CalcAvg(6);
 		}
 		else
@@ -167,6 +188,7 @@ int main()
 		sprintf_s(Tx, "%f", fValue);
 		start = chrono::system_clock::now();
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+
 		stop = chrono::system_clock::now();
 		elapsed_seconds += stop - start;
 
@@ -175,7 +197,15 @@ int main()
 		// Write to the file
 		MyFile << "Average time per transmission on Server (including sends & recieves):\n" << (elapsed_seconds.count() / 11.0);	//there are 11 transmissions
 		MyFile << "\nTotal time of all transmissions on Server (including sends & recieves):\n" << (elapsed_seconds.count());
+
 		// Close the file
+		MyFile.close();
+    
+    ofstream MyFile("UpdateDataLogtxt.txt");
+
+		// Write to the file
+		MyFile << "Average elapsed UpdateData time: " << (elapsed_seconds.count() / 7.0);	//there are 7 updates
+    // Close the file
 		MyFile.close();
 
 	}
