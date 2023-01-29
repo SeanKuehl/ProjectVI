@@ -1,5 +1,7 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
+#include <chrono>
+#include <fstream>
 #pragma comment(lib, "Ws2_32.lib")
 using namespace std;
 
@@ -9,6 +11,9 @@ struct StorageTypes
 	float* pData;
 };
 StorageTypes RxData[7];
+
+chrono::time_point<chrono::system_clock> start, stop;
+chrono::duration<double> elapsed_seconds;
 
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
@@ -55,7 +60,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(0, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(0);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Y") == 0)
 		{
@@ -63,7 +71,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(1, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(1);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "ACCELERATION BODY Z") == 0)
 		{
@@ -71,7 +82,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(2, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(2);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "TOTAL WEIGHT") == 0)
 		{
@@ -79,7 +93,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(3, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(3);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "PLANE ALTITUDE") == 0)
 		{
@@ -87,7 +104,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(4, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(4);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
@@ -95,7 +115,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(5, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(5);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
 		{
@@ -103,7 +126,10 @@ int main()
 			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			fValue = (float)atof(RxBuffer);
 			UpdateData(6, fValue);
+
+			auto start = chrono::high_resolution_clock::now();
 			fValue = CalcAvg(6);
+			auto stop = chrono::high_resolution_clock::now();
 		}
 		else
 		{
@@ -115,6 +141,13 @@ int main()
 		char Tx[128];
 		sprintf_s(Tx, "%f", fValue);
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
+
+		ofstream logFile("CalculateAverageOfDataLog.txt");
+
+		logFile << "Average time per calculation: " << (elapsed_seconds.count() / 7);
+		logFile << "Total calculations: 7";
+		logFile << "Data type: Float";
+		logFile.close();
 	}
 
 	closesocket(ConnectionSocket);	//closes incoming socket
