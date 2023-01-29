@@ -1,10 +1,28 @@
+/*
+9 Receiving transmissions on Server
+2 Receiving transmissions on Client
+
+2 Sending transmissions on Server
+2 Sending transmissions on Client
+
+Total transmissions on Server = 11
+Total transmissions on Client = 4
+
+Total transmissions : 15
+*/
+
 #include <windows.networking.sockets.h>
 #pragma comment(lib, "Ws2_32.lib")
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <ctime>
 #include <string>
 #include <vector>
 using namespace std;
+
+chrono::time_point<chrono::system_clock> start, stop;
+chrono::duration<double> elapsed_seconds;
 
 unsigned int GetSize();
 
@@ -48,11 +66,23 @@ int main()
 				offset = strInput.find_first_of(',', preOffset+1);
 				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
 				//send paramname (eg. "ACCELERATION BODY X")
+				start = chrono::system_clock::now();
 				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
 				//receives ACK from server
+				start = chrono::system_clock::now();
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+				start = chrono::system_clock::now();
 				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+				start = chrono::system_clock::now();
 				recv(ClientSocket, Rx, sizeof(Rx), 0);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
 				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
 				preOffset = offset;
 				iParamIndex++;
@@ -74,6 +104,15 @@ int main()
 			}
 		}
 		ifs.close();
+
+
+		ofstream MyFile("DataCommsClientLog.txt");
+
+		// Write to the file
+		MyFile << "Average time per transmission on Client (including sends & recieves):\n" << (elapsed_seconds.count() / 4.0);	//there are 4 transmissions
+		MyFile << "\nTotal time of all transmissions on Client (including sends & recieves):\n" << (elapsed_seconds.count());
+		// Close the file
+		MyFile.close();
 	}
 
 	closesocket(ClientSocket);
