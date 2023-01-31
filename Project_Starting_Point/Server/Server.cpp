@@ -88,7 +88,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(0, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -107,7 +107,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(1, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -126,7 +126,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(2, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -145,7 +145,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(3, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -164,7 +164,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(4, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -173,7 +173,7 @@ int main()
 			fValue = CalcAvg(4);
 			auto stopTime = chrono::high_resolution_clock::now();
 		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR PICTH DEGREES") == 0)
+		else if (strcmp(RxBuffer, "ALTITUDE INDICATOR PICTH DEGREES") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			start = chrono::system_clock::now();
@@ -183,7 +183,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(5, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -192,7 +192,7 @@ int main()
 			fValue = CalcAvg(5);
 			auto stopTime = chrono::high_resolution_clock::now();
 		}
-		else if (strcmp(RxBuffer, "ATTITUDE INDICATOR BANK DEGREES") == 0)
+		else if (strcmp(RxBuffer, "ALTITUDE INDICATOR BANK DEGREES") == 0)
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			start = chrono::system_clock::now();
@@ -202,7 +202,7 @@ int main()
 			fValue = (float)atof(RxBuffer);
 			start = chrono::system_clock::now();
 			UpdateData(6, fValue);
-      stop = chrono::system_clock::now();
+			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
 
@@ -225,7 +225,7 @@ int main()
 		sprintf_s(Tx, "%f", fValue);
 		start = chrono::system_clock::now();
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
-    stop = chrono::system_clock::now();
+		stop = chrono::system_clock::now();
 		elapsed_seconds += stop - start;
 
 		ofstream MyFile("DataCommsServerLog.txt");
@@ -246,12 +246,12 @@ int main()
 
 		
     
-    ofstream MyFile("UpdateDataLogtxt.txt");
+		ofstream MyUpdateFile("UpdateDataLogtxt.txt");
 
 		// Write to the file
-		MyFile << "Average elapsed UpdateData time: " << (elapsed_seconds.count() / 7.0);	//there are 7 updates
+		MyUpdateFile << "Average elapsed UpdateData time: " << (elapsed_seconds.count() / 7.0);	//there are 7 updates
     // Close the file
-		MyFile.close();
+		MyUpdateFile.close();
 
 
 	}
