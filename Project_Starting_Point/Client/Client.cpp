@@ -7,7 +7,6 @@
 
 Total transmissions on Server = 11
 Total transmissions on Client = 4
-
 Total transmissions : 15
 */
 
