@@ -23,7 +23,7 @@ using namespace std;
 
 struct StorageTypes 
 { 
-	unsigned int size = 0;
+	unsigned short int size = 0;
 	float* pData;
 };
 StorageTypes RxData[7];
@@ -34,7 +34,7 @@ StorageTypes RxData[7];
 chrono::time_point<chrono::system_clock> start, stop;
 chrono::duration<double> elapsed_seconds;
 
-void UpdateData(unsigned int, float);
+void UpdateData(unsigned short int, float);
 float CalcAvg(unsigned int);
 
 int main()
@@ -269,7 +269,7 @@ int main()
 	return 1;
 }
 
-void UpdateData(unsigned int uiIndex, float value)
+void UpdateData(unsigned short int uiIndex, float value)
 {
 	
 	
