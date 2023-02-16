@@ -13,7 +13,7 @@ Total transmissions : 15
 
 #include <windows.networking.sockets.h>
 #include <iostream>
-#include <vector>
+
 #include <fstream>
 #include <chrono>
 #include <ctime>
@@ -28,8 +28,7 @@ struct StorageTypes
 };
 StorageTypes RxData[7];
 
-//vector of 7 vectors of floats
-vector<vector<float>> replacementData;
+
 
 
 chrono::time_point<chrono::system_clock> start, stop;
@@ -40,9 +39,7 @@ float CalcAvg(unsigned int);
 
 int main()
 {
-	for (int i = 0; i < 7; i++) {
-		replacementData.push_back({});
-	}
+	
 	
 
 	WSADATA wsaData;
@@ -274,22 +271,25 @@ int main()
 
 void UpdateData(unsigned int uiIndex, float value)
 {
-	if (replacementData.at(uiIndex).size() == 0)
-	{
-		replacementData.at(uiIndex).push_back(value);
-	}
-	else
-	{
-		replacementData.at(uiIndex).push_back(value);
-	}
+	
+	
+	float* pNewData = new float[RxData[uiIndex].size + 1];
+	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
+		pNewData[x] = RxData[uiIndex].pData[x];
+
+	pNewData[RxData[uiIndex].size] = value;
+	delete[] RxData[uiIndex].pData;
+	RxData[uiIndex].pData = pNewData;
+	RxData[uiIndex].size++;
+	
 }
 
 float CalcAvg(unsigned int uiIndex)
 {
 	float Avg = 0;
-	for (unsigned int x = 0; x < replacementData.at(uiIndex).size(); x++)
-		Avg += replacementData.at(uiIndex).at(x);
+	for (unsigned int x = 0; x < RxData[uiIndex].size; x++)
+		Avg += RxData[uiIndex].pData[x];
 
-	Avg = Avg / replacementData.at(uiIndex).size();
+	Avg = Avg / RxData[uiIndex].size;
 	return Avg;
 }
