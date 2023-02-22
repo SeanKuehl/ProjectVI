@@ -211,6 +211,44 @@ int main()
 			fValue = CalcAvg(6);
 			auto stopTime = chrono::high_resolution_clock::now();
 		}
+		else if (strcmp(RxBuffer, "ELAPSED FLIGHT TIME") == 0)
+		{
+			memset(RxBuffer, 0, sizeof(RxBuffer));
+			start = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
+			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
+			UpdateData(7, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
+
+
+			auto startTime = chrono::high_resolution_clock::now();
+
+			fValue = CalcAvg(7);
+			auto stopTime = chrono::high_resolution_clock::now();
+		}
+		else if (strcmp(RxBuffer, "FUEL ONBOARD") == 0)
+		{
+			memset(RxBuffer, 0, sizeof(RxBuffer));
+			start = chrono::system_clock::now();
+			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
+			fValue = (float)atof(RxBuffer);
+			start = chrono::system_clock::now();
+			UpdateData(8, fValue);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
+
+
+			auto startTime = chrono::high_resolution_clock::now();
+
+			fValue = CalcAvg(8);
+			auto stopTime = chrono::high_resolution_clock::now();
+		}
 		else
 		{
 			memset(RxBuffer, 0, sizeof(RxBuffer));

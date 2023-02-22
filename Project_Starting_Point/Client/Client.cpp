@@ -26,6 +26,12 @@ chrono::duration<double> elapsed_seconds;
 
 unsigned int GetSize();
 
+int idBase = 1;
+
+int GetUniqueID();
+
+
+
 int main()
 {
 	WSADATA wsaData;
@@ -34,6 +40,8 @@ int main()
 	unsigned int uiSize = 0;
 	vector<string> ParamNames;
 	char Rx[128];
+
+	int planeID = GetUniqueID();
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -60,7 +68,7 @@ int main()
 			unsigned int iParamIndex = 0;
 			//while (offset != std::string::npos)
 			//read everything after the date and parse the rest of the stuff
-			while(iParamIndex != 8)
+			while(iParamIndex != 10)
 			{
 				//Use proper TCP format for sending and receiving
 				offset = strInput.find_first_of(',', preOffset+1);
@@ -140,4 +148,10 @@ unsigned int GetSize()
 	}
 
 	return uiSize;
+}
+
+int GetUniqueID() {
+
+	return idBase++;
+
 }
