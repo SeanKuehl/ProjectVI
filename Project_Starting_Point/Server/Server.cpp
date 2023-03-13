@@ -46,10 +46,9 @@ int main()
 	serverAddr.sin_port = htons(27001);
 	bind(ServerSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
 
-	listen(ServerSocket, 1);
-	cout << "Waiting for client connection\n" << endl;
-	ConnectionSocket = SOCKET_ERROR;
-	ConnectionSocket = accept(ServerSocket, NULL, NULL);
+	if (listen(ServerSocket, SOMAXCONN) == SOCKET_ERROR) {
+		return -1;
+	}
 
 	std::vector<std::thread> clientThreads;
 
@@ -74,7 +73,6 @@ int main()
 
 	return 1;
 
-	closesocket(ConnectionSocket);
 }
 
 void UpdateData(unsigned int uiIndex, float value)
@@ -334,5 +332,7 @@ void handleClient(SOCKET clientSocket)
 		// Close the file
 		MyUpdateFile.close();
 		*/
+
+		closesocket(clientSocket);
 	}
 }
