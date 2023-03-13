@@ -22,14 +22,13 @@ StorageTypes RxData[7];
 chrono::time_point<chrono::system_clock> start, stop;
 chrono::duration<double> elapsed_seconds;
 
-SOCKET ServerSocket, ConnectionSocket;
-
 void UpdateData(unsigned int, float);
 float CalcAvg(unsigned int);
-void handleClient(SOCKET clientSocket);
+void handleClient(SOCKET ConnectionSocket);
 
 int main()
 {
+	SOCKET ServerSocket, ConnectionSocket;
 	WSADATA wsaData;
 
 	sockaddr_in serverAddr, clientAddr;
@@ -37,7 +36,8 @@ int main()
 
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	ServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (ServerSocket == SOCKET_ERROR) {
+	if (ServerSocket == SOCKET_ERROR) 
+	{
 		return -1;
 	}
 
@@ -46,7 +46,8 @@ int main()
 	serverAddr.sin_port = htons(27001);
 	bind(ServerSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
 
-	if (listen(ServerSocket, SOMAXCONN) == SOCKET_ERROR) {
+	if (listen(ServerSocket, SOMAXCONN) == SOCKET_ERROR) 
+	{
 		return -1;
 	}
 
@@ -72,7 +73,6 @@ int main()
 	WSACleanup();
 
 	return 1;
-
 }
 
 void UpdateData(unsigned int uiIndex, float value)
@@ -106,7 +106,7 @@ float CalcAvg(unsigned int uiIndex)
 	return Avg;
 }
 
-void handleClient(SOCKET clientSocket)
+void handleClient(SOCKET ConnectionSocket)
 {
 	std::cout << "Client connected" << std::endl;
 	char RxBuffer[128] = {};
@@ -312,27 +312,27 @@ void handleClient(SOCKET clientSocket)
 		send(ConnectionSocket, Tx, sizeof(Tx), 0);
 		stop = chrono::system_clock::now();
 		elapsed_seconds += stop - start;
-
-		// Implemented Server Performance code
-		/*
-		ofstream MyFile("DataCommsServerLog.txt");
-		// Write to the file
-		MyFile << "Average time per transmission on Server (including sends & recieves):\n" << (elapsed_seconds.count() / 11.0);	//there are 11 transmissions
-		MyFile << "\nTotal time of all transmissions on Server (including sends & recieves):\n" << (elapsed_seconds.count());
-		// Close the file
-		MyFile.close();
-		ofstream logFile("CalculateAverageOfDataLog.txt");
-		logFile << "Average time per calculation: " << (elapsed_seconds.count() / 7);//there are 7 transmissions
-		logFile << "Total calculations: 7";
-		logFile << "Data type: Float";
-		logFile.close();
-		ofstream MyUpdateFile("UpdateDataLogtxt.txt");
-		// Write to the file
-		MyUpdateFile << "Average elapsed UpdateData time: " << (elapsed_seconds.count() / 7.0);	//there are 7 updates
-		// Close the file
-		MyUpdateFile.close();
-		*/
-
-		closesocket(clientSocket);
 	}
+
+	closesocket(ConnectionSocket);
 }
+
+// Implemented Server Performance code
+/*
+ofstream MyFile("DataCommsServerLog.txt");
+// Write to the file
+MyFile << "Average time per transmission on Server (including sends & recieves):\n" << (elapsed_seconds.count() / 11.0);	//there are 11 transmissions
+MyFile << "\nTotal time of all transmissions on Server (including sends & recieves):\n" << (elapsed_seconds.count());
+// Close the file
+MyFile.close();
+ofstream logFile("CalculateAverageOfDataLog.txt");
+logFile << "Average time per calculation: " << (elapsed_seconds.count() / 7);//there are 7 transmissions
+logFile << "Total calculations: 7";
+logFile << "Data type: Float";
+logFile.close();
+ofstream MyUpdateFile("UpdateDataLogtxt.txt");
+// Write to the file
+MyUpdateFile << "Average elapsed UpdateData time: " << (elapsed_seconds.count() / 7.0);	//there are 7 updates
+// Close the file
+MyUpdateFile.close();
+*/
