@@ -62,6 +62,7 @@ int main()
 		}
 		// Create a new thread to handle the client connection
 		clientThreads.emplace_back(handleClient, ConnectionSocket);
+		
 	}
 
 	for (auto& thread : clientThreads)
@@ -108,7 +109,10 @@ float CalcAvg(unsigned int uiIndex)
 
 void handleClient(SOCKET ConnectionSocket)
 {
-	std::cout << "Client connected" << std::endl;
+	std::cout << "Client:" << std::this_thread::get_id() << "connected" << std::endl;
+	// Send Unique ID
+	// send(ConnectionSocket, this_thread::get_id(), sizeof(this_thread::get_id()), 0);
+
 	char RxBuffer[128] = {};
 	while (RxBuffer[0] != '*')
 	{
