@@ -70,7 +70,10 @@ int main()
 					string strTx = strInput.substr(preOffset + 1, offset - (preOffset + 1));
 					//send paramname (eg. "ACCELERATION BODY X")
 					start = chrono::system_clock::now();
-					send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
+
+					string packet = packetize(ParamNames[iParamIndex]);
+					send(ClientSocket, packet.c_str(), (int)packet.length(), 0);
+
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					//receives ACK from server
@@ -79,7 +82,9 @@ int main()
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					start = chrono::system_clock::now();
-					send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
+
+					packet = packetize(strTx);
+					send(ClientSocket, packet.c_str(), (int)packet.length(), 0);
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					start = chrono::system_clock::now();
@@ -164,4 +169,11 @@ int main()
 int GetUniqueID()
 {
 	return idBase++;
+}
+
+string packetize(string s)
+{
+	int id = GetUniqueID();
+	string packet = id + "|" + s;
+	return packet;
 }
