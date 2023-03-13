@@ -24,13 +24,8 @@ using namespace std;
 chrono::time_point<chrono::system_clock> start, stop;
 chrono::duration<double> elapsed_seconds;
 
-unsigned int GetSize();
-
 int idBase = 1;
-
 int GetUniqueID();
-
-
 
 int main()
 {
@@ -50,78 +45,112 @@ int main()
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
 
-	uiSize = GetSize(); //this is the number of lines in the datafile
-	//in a loop, open the file, read one line, close it, repeat
-	for (unsigned int l = 0; l < uiSize; l++)
+	string strInput;
+	unsigned int l = 0;
+
+
+	ifstream ifs("DataFile.txt");
+	if (ifs.is_open())
 	{
-		//load in the text file and read it
-		string strInput;
-		ifstream ifs("DataFile.txt");
-		for (unsigned int iStart = 0; iStart < l; iStart++)
+		while (!ifs.eof())
+		{
 			getline(ifs, strInput);
 
-		getline(ifs, strInput);
-		if (l > 0) //if line is greater than 0, handle the values
-		{
-			size_t offset, preOffset;
-			offset = preOffset = 0;
-			unsigned int iParamIndex = 0;
-			//while (offset != std::string::npos)
-			//read everything after the date and parse the rest of the stuff
-			while(iParamIndex != 10)
+			if (l > 0) //if line is greater than 0, handle the values
 			{
-				//Use proper TCP format for sending and receiving
-				offset = strInput.find_first_of(',', preOffset+1);
-				string strTx = strInput.substr(preOffset+1, offset - (preOffset+1));
-				//send paramname (eg. "ACCELERATION BODY X")
-				start = chrono::system_clock::now();
-				send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
-				stop = chrono::system_clock::now();
-				elapsed_seconds += stop - start;
-				//receives ACK from server
-				start = chrono::system_clock::now();
-				recv(ClientSocket, Rx, sizeof(Rx), 0);
-				stop = chrono::system_clock::now();
-				elapsed_seconds += stop - start;
-				start = chrono::system_clock::now();
-				send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
-				stop = chrono::system_clock::now();
-				elapsed_seconds += stop - start;
-				start = chrono::system_clock::now();
-				recv(ClientSocket, Rx, sizeof(Rx), 0);
-				stop = chrono::system_clock::now();
-				elapsed_seconds += stop - start;
-				cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
-				preOffset = offset;
-				iParamIndex++;
+				size_t offset, preOffset;
+				offset = preOffset = 0;
+				unsigned int iParamIndex = 0;
+				//while (offset != std::string::npos)
+				//read everything after the date and parse the rest of the stuff
+				while (iParamIndex != 10)
+				{
+					//Use proper TCP format for sending and receiving
+					offset = strInput.find_first_of(',', preOffset + 1);
+					string strTx = strInput.substr(preOffset + 1, offset - (preOffset + 1));
+					//send paramname (eg. "ACCELERATION BODY X")
+					start = chrono::system_clock::now();
+					send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
+					stop = chrono::system_clock::now();
+					elapsed_seconds += stop - start;
+					//receives ACK from server
+					start = chrono::system_clock::now();
+					recv(ClientSocket, Rx, sizeof(Rx), 0);
+					stop = chrono::system_clock::now();
+					elapsed_seconds += stop - start;
+					start = chrono::system_clock::now();
+					send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
+					stop = chrono::system_clock::now();
+					elapsed_seconds += stop - start;
+					start = chrono::system_clock::now();
+					recv(ClientSocket, Rx, sizeof(Rx), 0);
+					stop = chrono::system_clock::now();
+					elapsed_seconds += stop - start;
+					cout << ParamNames[iParamIndex] << " Avg: " << Rx << endl;
+					preOffset = offset;
+					iParamIndex++;
+				}
 			}
-		}
-		else //if line is the first line, handle the param names
-		{
-			//put the timestamp in vector
-			ParamNames.push_back("TIME STAMP");
-			size_t offset, preOffset;
-			offset = 0;
-			preOffset = -1;
-			while (offset != std::string::npos)
+
+			else //if line is the first line, handle the param names
 			{
-				offset = strInput.find_first_of(',', preOffset + 1);
-				string newParam = strInput.substr(preOffset + 1, offset - (preOffset + 1));
-				ParamNames.push_back(newParam); //add the param names to ParamNames vector
-				preOffset = offset;
+				//put the timestamp in vector
+				ParamNames.push_back("TIME STAMP");
+				size_t offset, preOffset;
+				offset = 0;
+				preOffset = -1;
+				while (offset != std::string::npos)
+				{
+					offset = strInput.find_first_of(',', preOffset + 1);
+					string newParam = strInput.substr(preOffset + 1, offset - (preOffset + 1));
+					ParamNames.push_back(newParam); //add the param names to ParamNames vector
+					preOffset = offset;
+				}
 			}
+
+			l++;
+
+			ofstream MyFile("DataCommsClientLog.txt");
+
+			// Write to the file
+			MyFile << "Average time per transmission on Client (including sends & recieves):\n" << (elapsed_seconds.count() / 4.0);	//there are 4 transmissions
+			MyFile << "\nTotal time of all transmissions on Client (including sends & recieves):\n" << (elapsed_seconds.count());
+			// Close the file
+			MyFile.close();
 		}
-		ifs.close();
 
-
-		ofstream MyFile("DataCommsClientLog.txt");
-
-		// Write to the file
-		MyFile << "Average time per transmission on Client (including sends & recieves):\n" << (elapsed_seconds.count() / 4.0);	//there are 4 transmissions
-		MyFile << "\nTotal time of all transmissions on Client (including sends & recieves):\n" << (elapsed_seconds.count());
-		// Close the file
-		MyFile.close();
 	}
+	ifs.close();
+
+	/*
+
+	//create filename with timestamp for logging
+	time_t rawtime;
+	time(&rawtime);
+	string filename = ctime(&rawtime);
+	filename.pop_back();
+	filename += "-FileIO.txt";
+	//replace colons in filename
+	filename.replace(filename.begin() + 16, filename.end() - 18, "-");
+	filename.replace(filename.begin() + 13, filename.end() - 21, "-");
+
+	//calculate time spent initializing client
+	int elapsedtime = chrono::duration_cast<chrono::microseconds>(endclient - startclient).count();
+
+	//logging
+	ofstream file(filename);
+
+	if (file.is_open())
+	{
+		file << "Client initialization in microseconds: " << elapsedtime << endl;
+		file.close();
+	}
+	else {
+		// show message:
+		std::cout << "Error opening file";
+	}
+
+	*/
 
 	closesocket(ClientSocket);
 	WSACleanup();
@@ -132,26 +161,7 @@ int main()
 //reading from the file to determine size before reading
 //from file? That could cause a drag.
 
-// Open the txt input data file and read line by line, incrementing the uiSize variable containing the number of lines of data per each iteration
-unsigned int GetSize()
+int GetUniqueID()
 {
-	string strInput;
-	unsigned int uiSize = 0;
-	ifstream ifs("DataFile.txt");
-	if (ifs.is_open())
-	{
-		while (!ifs.eof())
-		{
-			getline(ifs, strInput);
-			uiSize++;
-		}
-	}
-
-	return uiSize;
-}
-
-int GetUniqueID() {
-
 	return idBase++;
-
 }
