@@ -26,6 +26,7 @@ chrono::duration<double> elapsed_seconds;
 
 int idBase = 1;
 int GetUniqueID();
+string packetize(string, string);
 
 int main()
 {
@@ -44,6 +45,9 @@ int main()
 	SvrAddr.sin_port = htons(27001);
 	SvrAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr));
+
+	recv(ClientSocket, Rx, sizeof(Rx), 0);
+	string ID = string(Rx);
 
 	string strInput;
 	unsigned int l = 0;
@@ -70,7 +74,10 @@ int main()
 					string strTx = strInput.substr(preOffset + 1, offset - (preOffset + 1));
 					//send paramname (eg. "ACCELERATION BODY X")
 					start = chrono::system_clock::now();
-					send(ClientSocket, ParamNames[iParamIndex].c_str(), (int)ParamNames[iParamIndex].length(), 0);
+
+					string packet = packetize(ParamNames[iParamIndex], ID);
+					send(ClientSocket, packet.c_str(), (int)packet.length(), 0);
+
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					//receives ACK from server
@@ -79,7 +86,10 @@ int main()
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					start = chrono::system_clock::now();
-					send(ClientSocket, strTx.c_str(), (int)strTx.length(), 0);
+					
+					packet = packetize(strTx, ID);
+					send(ClientSocket, packet.c_str(), (int)packet.length(), 0);
+
 					stop = chrono::system_clock::now();
 					elapsed_seconds += stop - start;
 					start = chrono::system_clock::now();
@@ -164,4 +174,10 @@ int main()
 int GetUniqueID()
 {
 	return idBase++;
+}
+
+string packetize(string s, string ID)
+{
+	string packet = ID + "|" + s;
+	return packet;
 }
