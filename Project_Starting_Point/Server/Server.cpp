@@ -124,240 +124,247 @@ void handleClient(SOCKET ConnectionSocket)
 	//send the ID over
 	send(ConnectionSocket, ID.c_str(), sizeof(ID.c_str()), 0);
 
+	bool bDone = false;
 	char RxBuffer[128] = {};
 	while (RxBuffer[0] != '*')
 	{
-		float fValue = 0;
-		memset(RxBuffer, 0, sizeof(RxBuffer));
-		start = chrono::system_clock::now();
-		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-		stop = chrono::system_clock::now();
-		elapsed_seconds += stop - start;
-
-		//sent RxBuffer to string
-		string rx = string(RxBuffer);
-		string body = parse(rx);
-
-		start = chrono::system_clock::now();
-		send(ConnectionSocket, "ACK", sizeof("ACK"), 0);
-		stop = chrono::system_clock::now();
-		elapsed_seconds += stop - start;
-
-		if (strcmp(body.c_str(), "ACCELERATION BODY X") == 0)
+		while (!bDone)
 		{
+			float fValue = 0;
 			memset(RxBuffer, 0, sizeof(RxBuffer));
 			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+			int result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
 			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
+
+			if (result < 0)
+				bDone = true;
+
+			//sent RxBuffer to string
+			string rx = string(RxBuffer);
+			string body = parse(rx);
+
 			start = chrono::system_clock::now();
-			UpdateData(0, fValue);
+			send(ConnectionSocket, "ACK", sizeof("ACK"), 0);
 			stop = chrono::system_clock::now();
 			elapsed_seconds += stop - start;
 
-			auto startTime = chrono::high_resolution_clock::now();
+			if (strcmp(body.c_str(), "ACCELERATION BODY X") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
 
-			fValue = CalcAvg(0);
-			auto stopTime = chrono::high_resolution_clock::now();
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(0, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(0);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "ACCELERATION BODY Y") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(1, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(1);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "ACCELERATION BODY Z") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(2, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(2);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "TOTAL WEIGHT") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(3, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(3);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "PLANE ALTITUDE") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(4, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(4);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "ALTITUDE INDICATOR PICTH DEGREES") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(5, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(5);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "ALTITUDE INDICATOR BANK DEGREES") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(6, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(6);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "ELAPSED FLIGHT TIME") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(7, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(7);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else if (strcmp(body.c_str(), "FUEL ONBOARD") == 0)
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+
+				string value = parse(string(RxBuffer));
+
+				elapsed_seconds += stop - start;
+				fValue = std::stof(value);
+				start = chrono::system_clock::now();
+				UpdateData(8, fValue);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+
+
+				auto startTime = chrono::high_resolution_clock::now();
+
+				fValue = CalcAvg(8);
+				auto stopTime = chrono::high_resolution_clock::now();
+			}
+
+			else
+			{
+				memset(RxBuffer, 0, sizeof(RxBuffer));
+				start = chrono::system_clock::now();
+				recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				stop = chrono::system_clock::now();
+				elapsed_seconds += stop - start;
+				fValue = 0.0;
+			}
+
+			char Tx[128];
+			sprintf_s(Tx, "%f", fValue);
+			start = chrono::system_clock::now();
+			send(ConnectionSocket, Tx, sizeof(Tx), 0);
+			stop = chrono::system_clock::now();
+			elapsed_seconds += stop - start;
 		}
-
-		else if (strcmp(body.c_str(), "ACCELERATION BODY Y") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(1, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(1);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "ACCELERATION BODY Z") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(2, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(2);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "TOTAL WEIGHT") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(3, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(3);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "PLANE ALTITUDE") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(4, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(4);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "ALTITUDE INDICATOR PICTH DEGREES") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(5, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(5);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "ALTITUDE INDICATOR BANK DEGREES") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(6, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(6);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "ELAPSED FLIGHT TIME") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(7, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(7);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else if (strcmp(body.c_str(), "FUEL ONBOARD") == 0)
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			size_t result = recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-
-			string value = parse(string(RxBuffer));
-
-			elapsed_seconds += stop - start;
-			fValue = std::stof(value);
-			start = chrono::system_clock::now();
-			UpdateData(8, fValue);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-
-
-			auto startTime = chrono::high_resolution_clock::now();
-
-			fValue = CalcAvg(8);
-			auto stopTime = chrono::high_resolution_clock::now();
-		}
-
-		else
-		{
-			memset(RxBuffer, 0, sizeof(RxBuffer));
-			start = chrono::system_clock::now();
-			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-			stop = chrono::system_clock::now();
-			elapsed_seconds += stop - start;
-			fValue = 0.0;
-		}
-
-		char Tx[128];
-		sprintf_s(Tx, "%f", fValue);
-		start = chrono::system_clock::now();
-		send(ConnectionSocket, Tx, sizeof(Tx), 0);
-		stop = chrono::system_clock::now();
-		elapsed_seconds += stop - start;
 	}
 
 	closesocket(ConnectionSocket);
